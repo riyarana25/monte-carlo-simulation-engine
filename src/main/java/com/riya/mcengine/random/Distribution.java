@@ -1,8 +1,12 @@
 package com.riya.mcengine.random;
 
 /**
- * Base type for random distributions.
+ * Generic probability distribution.
  */
-public class Distribution {
+public interface Distribution<T> {
 
+    /**
+     * Draws a sample using the given RandomSource.
+     */
+    T sample(RandomSource randomSource);
 }
