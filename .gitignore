@@ -1,1 +1,4 @@
 /target/
+# Ignore local VS Code machine settings
+.vscode/settings.json
+

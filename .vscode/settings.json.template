@@ -1,0 +1,13 @@
+{
+  // Copy this file to .vscode/settings.json and update the java.home path for your machine
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-17",
+      "path": "<PATH_TO_JDK_17>",
+      "default": true
+    }
+  ],
+  "java.home": "<PATH_TO_JDK_17>",
+  // Do not commit an actual .vscode/settings.json with absolute paths to version control
+  "java.compile.nullAnalysis.mode": "automatic"
+}
