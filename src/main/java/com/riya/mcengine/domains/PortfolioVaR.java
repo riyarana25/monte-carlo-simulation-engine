@@ -84,6 +84,26 @@ public class PortfolioVaR {
     }
 
     /**
+     * Analytical mean of control variate: E[r1] where r1 is first asset return.
+     * Control: r1 ~ N(μ1, σ1^2)
+     */
+    public double getControlMean() {
+        return drifts[0] * timeHorizon;
+    }
+
+    /**
+     * Sample both outcome and control from the same returns.
+     * Outcome: portfolio return; Control: first asset return (correlated but distinct)
+     * Returns [outcome, control]
+     */
+    public double[] sampleOutcomeAndControl(RandomSource rng) {
+        double[] returns = sampleReturns(rng);
+        double outcome = weights[0] * (1 + returns[0]) + weights[1] * (1 + returns[1]) - 1.0;
+        double control = returns[0];
+        return new double[]{outcome, control};
+    }
+
+    /**
      * Run MC simulation and return VaR estimate
      */
     public double[] estimateVaR(int n, RandomSource rng) {

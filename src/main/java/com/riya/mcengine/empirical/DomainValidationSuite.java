@@ -93,29 +93,27 @@ public class DomainValidationSuite {
 
         // Control Variate version
         List<Double> cvReps = new ArrayList<>();
+        double controlMean = portfolio.getControlMean();
+
         for (int rep = 0; rep < NUM_REPLICATIONS; rep++) {
             SeededRandomSource rng = new SeededRandomSource(globalSeed++);
 
             List<double[]> samples = new ArrayList<>();
             for (int i = 0; i < SAMPLES_PER_REP; i++) {
-                double outcome = portfolio.singleScenario(rng);
-                double control = portfolio.deltaNormalControl(rng);
-                samples.add(new double[]{outcome, control});
+                double[] pair = portfolio.sampleOutcomeAndControl(rng);
+                samples.add(pair);
             }
 
-            ControlVariateEstimator cv = new ControlVariateEstimator(
-                samples,
-                0.0  // E[delta-normal return] = 0
-            );
+            ControlVariateEstimator cv = new ControlVariateEstimator(samples, controlMean);
 
-            double sum = 0;
+            double[] adjustedReturns = new double[SAMPLES_PER_REP];
             for (int i = 0; i < SAMPLES_PER_REP; i++) {
-                double outcome = portfolio.singleScenario(rng);
-                double control = portfolio.deltaNormalControl(rng);
-                sum += cv.estimateAdjusted(outcome, control);
+                double[] pair = portfolio.sampleOutcomeAndControl(rng);
+                adjustedReturns[i] = cv.estimateAdjusted(pair[0], pair[1]);
             }
 
-            double var95mc = -sum / SAMPLES_PER_REP;
+            java.util.Arrays.sort(adjustedReturns);
+            double var95mc = -adjustedReturns[(int) (0.05 * SAMPLES_PER_REP)];
             cvReps.add(var95mc);
         }
 

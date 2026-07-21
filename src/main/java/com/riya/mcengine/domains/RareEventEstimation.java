@@ -39,11 +39,11 @@ public class RareEventEstimation {
     /**
      * Importance sampling: sample from N(threshold, 1), reweight.
      * Likelihood ratio: p(z)/q(z) = exp(-z^2/2) / exp(-(z-threshold)^2/2)
-     *                              = exp(threshold*z - threshold^2/2)
+     *                              = exp(-threshold*z + threshold^2/2)
      */
     public double importanceSamplePayoff(RandomSource rng) {
         double z = threshold + normal.sample(rng).doubleValue();
-        double likelihood = Math.exp(threshold * z - threshold * threshold / 2.0);
+        double likelihood = Math.exp(-threshold * z + threshold * threshold / 2.0);
         return z > threshold ? likelihood : 0.0;
     }
 
