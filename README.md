@@ -2,6 +2,8 @@
 
 A research-grade Java framework for Monte Carlo simulations with validated variance reduction techniques. Demonstrates the mathematical foundations, failure modes, and empirical validation of modern Monte Carlo methods.
 
+🌐 **[Live Demo](https://monte-carlo-simulation-engine-gwb9x3jyj.vercel.app)** — Try the interactive dashboard now!
+
 ## What This Is
 
 Not a financial library. Not a generic simulator. This is a **testbed for understanding when and why Monte Carlo works**.
