@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monte Carlo Simulation Engine - Complete Interview Preparation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 60px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        /* Heading Styles */
+        h1 {
+            font-size: 36px;
+            color: #2c3e50;
+            margin: 40px 0 20px 0;
+            border-bottom: 4px solid #3498db;
+            padding-bottom: 15px;
+            page-break-after: avoid;
+        }
+
+        h2 {
+            font-size: 26px;
+            color: #34495e;
+            margin: 35px 0 15px 0;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 20px;
+            color: #7f8c8d;
+            margin: 25px 0 12px 0;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 16px;
+            color: #2c3e50;
+            margin: 15px 0 8px 0;
+            page-break-after: avoid;
+        }
+
+        /* Text Styles */
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        strong {
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        em {
+            color: #7f8c8d;
+        }
+
+        /* Code Styles */
+        code {
+            background: #f8f9fa;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+            page-break-inside: avoid;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #ecf0f1;
+        }
+
+        /* List Styles */
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+
+        table th {
+            background: #3498db;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        table tr:hover {
+            background: #f0f0f0;
+        }
+
+        /* Link Styles */
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Blockquote Styles */
+        blockquote {
+            border-left: 4px solid #3498db;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #7f8c8d;
+            font-style: italic;
+            page-break-inside: avoid;
+        }
+
+        /* Special Callout */
+        .highlight-box {
+            background: #ecf8ff;
+            border-left: 4px solid #3498db;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 3px;
+            page-break-inside: avoid;
+        }
+
+        .highlight-box strong {
+            color: #2980b9;
+        }
+
+        /* Section Separator */
+        .section-break {
+            margin: 60px 0 40px 0;
+            padding: 20px 0;
+            border-top: 2px solid #ecf0f1;
+            page-break-before: always;
+        }
+
+        /* TOC */
+        .toc {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 5px;
+            margin: 30px 0;
+            page-break-inside: avoid;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .toc li {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+
+        .toc li:before {
+            content: "▸ ";
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .toc a {
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 100px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #95a5a6;
+            font-size: 0.9em;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .container {
+                max-width: 100%;
+                margin: 0;
+                padding: 0;
+                box-shadow: none;
+            }
+
+            h1 {
+                page-break-before: always;
+                padding-top: 40px;
+            }
+
+            a {
+                text-decoration: underline;
+                color: #2c3e50;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
+            pre {
+                font-size: 0.75em;
+            }
+        }
+
+        /* Title Page */
+        .title-page {
+            text-align: center;
+            padding: 100px 0;
+            page-break-after: always;
+        }
+
+        .title-page h1 {
+            font-size: 48px;
+            margin-bottom: 20px;
+            border: none;
+        }
+
+        .title-page .subtitle {
+            font-size: 24px;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+        }
+
+        .title-page .meta {
+            margin-top: 100px;
+            font-size: 14px;
+            color: #95a5a6;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+
+        .badge.intermediate {
+            background: #f39c12;
+        }
+
+        .badge.advanced {
+            background: #e74c3c;
+        }
+
+        .badge.system-design {
+            background: #9b59b6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Title Page -->
+        <div class="title-page">
+            <h1>🎯 Monte Carlo Simulation Engine</h1>
+            <p class="subtitle">Complete Project Documentation & Interview Preparation Guide</p>
+            <div class="meta">
+                <p>Full-Stack Web Application</p>
+                <p>Spring Boot + Next.js + React</p>
+                <p><strong>Live Demo:</strong> <a href="https://monte-carlo-simulation-engine-gwb9x3jyj.vercel.app">https://monte-carlo-simulation-engine-gwb9x3jyj.vercel.app</a></p>
+                <p><strong>GitHub:</strong> <a href="https://github.com/riyarana25/monte-carlo-simulation-engine">github.com/riyarana25/monte-carlo-simulation-engine</a></p>
+                <p style="margin-top: 50px; font-size: 12px;">Document Generated: 2026-07-22</p>
+            </div>
+        </div>
+
+        <!-- Quick Start -->
+        <h2>Quick Reference: Interview Talking Points</h2>
+        <div class="highlight-box">
+            <p><strong>30-Second Pitch:</strong> "I built a full-stack web application for Monte Carlo simulations with a Spring Boot REST API backend and a Next.js React dashboard. The backend uses parallel computing for 5× speedup, and the frontend is deployed on Vercel for global edge distribution. Key achievement: implemented variance reduction techniques that improved accuracy by 3.45×."</p>
+        </div>
+
+        <!-- Tech Stack Overview -->
+        <h2>Technology Stack Overview</h2>
+        <table>
+            <tr>
+                <th>Layer</th>
+                <th>Technology</th>
+                <th>Version</th>
+                <th>Why Chosen</th>
+            </tr>
+            <tr>
+                <td><strong>Backend API</strong></td>
+                <td>Spring Boot</td>
+                <td>3.3.0</td>
+                <td>Production-ready, excellent for REST APIs</td>
+            </tr>
+            <tr>
+                <td><strong>Language</strong></td>
+                <td>Java</td>
+                <td>21</td>
+                <td>Type-safe, strong concurrency support</td>
+            </tr>
+            <tr>
+                <td><strong>Frontend</strong></td>
+                <td>Next.js</td>
+                <td>14.0.0</td>
+                <td>Server-side rendering, best Vercel integration</td>
+            </tr>
+            <tr>
+                <td><strong>UI Framework</strong></td>
+                <td>React</td>
+                <td>18.2.0</td>
+                <td>Component-based, large ecosystem</td>
+            </tr>
+            <tr>
+                <td><strong>Styling</strong></td>
+                <td>Tailwind CSS</td>
+                <td>3.3.0</td>
+                <td>Utility-first, responsive, dark mode</td>
+            </tr>
+            <tr>
+                <td><strong>Backend Deployment</strong></td>
+                <td>Render + Docker</td>
+                <td>Latest</td>
+                <td>Free tier, easy scaling</td>
+            </tr>
+            <tr>
+                <td><strong>Frontend Deployment</strong></td>
+                <td>Vercel</td>
+                <td>Latest</td>
+                <td>Edge CDN, zero-config, free tier</td>
+            </tr>
+        </table>
+
+        <!-- Key Accomplishments -->
+        <div class="section-break"></div>
+        <h2>Key Accomplishments</h2>
+        <ul>
+            <li><strong>Full-Stack Development:</strong> Built complete application from database to frontend</li>
+            <li><strong>Performance Optimization:</strong> Achieved 5× parallel speedup using multi-threading</li>
+            <li><strong>Variance Reduction:</strong> Implemented control variate technique (3.45× improvement)</li>
+            <li><strong>Statistical Validation:</strong> Empirical validation against known analytical solutions</li>
+            <li><strong>Cloud Deployment:</strong> Deployed end-to-end to production (Render + Vercel)</li>
+            <li><strong>API Design:</strong> REST API with OpenAPI/Swagger documentation</li>
+            <li><strong>Production Bugs:</strong> Fixed CORS issues and null-reference crashes</li>
+            <li><strong>Learning New Stack:</strong> Learned Next.js and deployed to production</li>
+        </ul>
+
+        <!-- Most Important Interview Questions -->
+        <div class="section-break"></div>
+        <h2>🔥 Top 5 Interview Questions (Most Likely to Be Asked)</h2>
+
+        <h3><span class="badge">Fundamental</span>What does this project do?</h3>
+        <p><strong>Answer (2 min):</strong></p>
+        <blockquote>
+            "I built a full-stack web application for Monte Carlo simulations. Users can select from four different simulation domains (Buffon's Needle for π estimation, Portfolio VaR for financial risk, Barrier Options for derivatives, and Rare Events probability), adjust parameters like sample size and replication count, and get instant results with statistical metrics like confidence intervals, bias, and MSE.
+
+            The architecture uses Spring Boot for the backend REST API and Next.js for the interactive frontend dashboard. The backend is deployed on Render and the frontend on Vercel, both on free tiers. A key achievement is using parallel computation (4 threads) to achieve 5× speedup and implementing variance reduction techniques that improved accuracy by 3.45×."
+        </blockquote>
+
+        <h3><span class="badge">Intermediate</span>How does parallel execution work?</h3>
+        <p><strong>Answer (3 min):</strong></p>
+        <blockquote>
+            "The backend uses Java's ExecutorService to spawn a thread pool. When a user requests 100 replications with 4 threads, each replication is submitted as a task. The 4 threads process these tasks in parallel.
+
+            Each thread gets its own Random object initialized with a deterministic seed (seed + replication_number), ensuring reproducibility while maintaining thread safety. This avoids shared mutable state.
+
+            With 4 threads, we see approximately 4× speedup (minus synchronization overhead). Results are collected using Future objects and aggregated to compute final statistics."
+        </blockquote>
+
+        <h3><span class="badge">Advanced</span>How did you fix the null reference bug in results display?</h3>
+        <p><strong>Answer (2 min):</strong></p>
+        <blockquote>
+            "The API returns `varianceReduction: null` for naive estimators (no variance reduction). The React component checked `if (result.varianceReduction !== undefined)` but this doesn't catch null values, causing a TypeError when calling `.toFixed()` on null.
+
+            JavaScript has two falsy values: null and undefined. They're different (`null !== undefined` is true), but both should be treated as 'no value'. The fix was changing to `if (result.varianceReduction != null)` using loose equality, which catches both null and undefined.
+
+            This taught me to be explicit about nullable types and test edge cases."
+        </blockquote>
+
+        <h3><span class="badge">Advanced</span>Explain the variance reduction technique you implemented.</h3>
+        <p><strong>Answer (4 min):</strong></p>
+        <blockquote>
+            "I implemented control variates for Portfolio VaR estimation. The idea: use a correlated random variable with known mean to reduce noise.
+
+            For each simulation, I:
+            1. Generate correlated stock returns once
+            2. Compute outcome: estimated VaR using these returns
+            3. Compute control: vanilla call option price (also from same returns)
+            4. Adjust: EstimatedVaR + coefficient × (AnalyticalCallPrice - SimulatedCallPrice)
+
+            The key: by using the same random returns for both, they're highly correlated. The control's variance 'captures' the randomness, which gets removed from the estimate.
+
+            Results: 3.45× variance reduction. This means same accuracy with 70% fewer samples, or 70% better accuracy with same samples.
+
+            Tradeoff: More complex code, requires knowing analytical control mean, only helps if control is strongly correlated."
+        </blockquote>
+
+        <h3><span class="badge">System-Design</span>How would you scale this to 1M concurrent users?</h3>
+        <p><strong>Answer (5 min):</strong></p>
+        <blockquote>
+            "Current architecture handles ~1000 users. To scale to 1M:
+
+            1. <strong>Containerization:</strong> Already using Docker, easy to scale horizontally
+            2. <strong>Kubernetes:</strong> Deploy 1000 pods across multiple regions, auto-scale based on CPU
+            3. <strong>Message Queue:</strong> Kafka or AWS Kinesis for async processing (user gets jobID immediately, results computed in background)
+            4. <strong>Caching:</strong> Redis cache (simulations deterministic: same params = same result, ~60% cache hit rate)
+            5. <strong>Load Balancer:</strong> AWS ALB with rate limiting (prevent single user overloading)
+            6. <strong>Results Storage:</strong> S3 for long-term storage, DynamoDB for recent results
+
+            Cost estimate: $150K/month (using spot instances for 70% discount)
+
+            The architecture would be stateless (easy horizontal scaling), with async processing decoupling frontend from backend."
+        </blockquote>
+
+        <!-- Full Q&A Section -->
+        <div class="section-break"></div>
+        <h2>Complete Interview Question Bank</h2>
+
+        <h3><span class="badge">Level 1: Foundational</span></h3>
+
+        <h4>Q1: Why Spring Boot for the backend?</h4>
+        <p><strong>Key points:</strong> Convention over configuration, built-in validation, OpenAPI/Swagger, production-ready features, strong Java ecosystem</p>
+
+        <h4>Q2: Why Next.js instead of plain React?</h4>
+        <p><strong>Key points:</strong> File-based routing, SSR benefits, automatic code splitting, Vercel integration, free deployment</p>
+
+        <h4>Q3: How does parallel simulation work?</h4>
+        <p><strong>Key points:</strong> ExecutorService, thread pool, deterministic seeds, no shared state, 4-5× speedup</p>
+
+        <h4>Q4: What's the difference between samples and replications?</h4>
+        <p><strong>Key points:</strong> Samples = single run (accuracy), Replications = multiple runs (confidence), together measure variance</p>
+
+        <h4>Q5: How did you ensure reproducibility?</h4>
+        <p><strong>Key points:</strong> Deterministic RNG with seed, same input = same output, important for validation</p>
+
+        <h3><span class="badge intermediate">Level 2: Intermediate</span></h3>
+
+        <h4>Q6: Explain the CORS error and how you fixed it.</h4>
+        <p><strong>Key points:</strong> Browser blocks cross-origin requests by default, Spring Boot CORS config whitelist, why this is better than alternatives</p>
+
+        <h4>Q7: Difference between bias and MSE?</h4>
+        <p><strong>Key points:</strong> Bias = systematic error, MSE = total error (bias² + variance), different optimization goals</p>
+
+        <h4>Q8: Control variate deep dive</h4>
+        <p><strong>Key points:</strong> Why use it, likelihood ratio, when it helps, when it doesn't, empirical results (3.45×)</p>
+
+        <h4>Q9: How does deployment work?</h4>
+        <p><strong>Key points:</strong> Git push → Render build (Docker) → backend running, Vercel build (Next.js) → frontend on edge CDN</p>
+
+        <h4>Q10: Debugging production issues</h4>
+        <p><strong>Key points:</strong> Methodical approach (measure, identify bottleneck, fix, verify)</p>
+
+        <h3><span class="badge advanced">Level 3: Advanced</span></h3>
+
+        <h4>Q11: Design 1000× speedup system</h4>
+        <p><strong>Key points:</strong> Hardware scaling (8×), distributed computing (100×), algorithm optimization (100×), GPU (50×), hybrid approach</p>
+
+        <h4>Q12: What if 95% of requests timeout?</h4>
+        <p><strong>Key points:</strong> Debugging methodology, async processing, caching, rate limiting, upgrading infrastructure</p>
+
+        <h4>Q13: How to add importance sampling estimator?</h4>
+        <p><strong>Key points:</strong> Math (likelihood ratio), implementation (proposal distribution), when to use, numerical stability</p>
+
+        <h4>Q14: Accuracy vs Latency tradeoff</h4>
+        <p><strong>Key points:</strong> Progressive enhancement, adaptive sampling, caching, user experience vs precision</p>
+
+        <h3><span class="badge system-design">Level 4: System Design</span></h3>
+
+        <h4>Q15: Scale to 1M concurrent users</h4>
+        <p><strong>Key points:</strong> Kubernetes, message queues, caching, load balancing, cost analysis ($150K/month)</p>
+
+        <!-- Behavioral Questions -->
+        <div class="section-break"></div>
+        <h2>Behavioral Questions</h2>
+
+        <h3>Q16: Tell me about a bug you fixed.</h3>
+        <p><strong>The Story:</strong> Portfolio VaR control variate was broken. Investigated and found we were calling sampleReturns() twice, getting different random numbers, destroying correlation. Refactored to call once, enabling 3.45× variance reduction.</p>
+
+        <h3>Q17: How do you approach learning new technology?</h3>
+        <p><strong>The Story:</strong> Learned Next.js by: reading docs (2h) → tutorial (20m) → building small feature → integrating backend → debugging errors → deploying → teaching others.</p>
+
+        <h3>Q18: Describe a time you optimized performance.</h3>
+        <p><strong>The Story:</strong> Portfolio VaR took 85ms/replication. Profiled code, found control variate was bottleneck AND had a correctness bug. Fix reduced time to 5ms (17×) AND fixed variance reduction.</p>
+
+        <!-- Key Takeaways -->
+        <div class="section-break"></div>
+        <h2>What Interviewers Want to Hear</h2>
+
+        <div class="highlight-box">
+            <h4>✓ Technical Depth</h4>
+            <p>Understand <strong>why</strong> you chose each technology, not just <strong>what</strong> you built. Example: "I chose Spring Boot because bean validation prevents invalid requests before expensive computation."</p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>✓ Problem-Solving</h4>
+            <p>Show debugging methodology: measure → identify → fix → verify. Not just "I fixed a bug" but "I profiled, found 85ms bottleneck, refactored, achieved 17× speedup."</p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>✓ Statistical Rigor</h4>
+            <p>Understand the math. Bias vs MSE, confidence intervals, variance reduction. You built simulations - prove you understand what they measure.</p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>✓ Production Thinking</h4>
+            <p>Fixed CORS, handled nulls, deployed to production, documented API. Not just "it works locally" but "it's production-ready."</p>
+        </div>
+
+        <div class="highlight-box">
+            <h4>✓ Scaling Vision</h4>
+            <p>Can you think beyond 1 user? How would you handle 1M? Show you understand distributed systems, caching, async processing.</p>
+        </div>
+
+        <!-- Resources -->
+        <div class="section-break"></div>
+        <h2>Quick Reference Resources</h2>
+
+        <h3>Key Formulas</h3>
+        <pre>Confidence Interval: [mean - z·SE, mean + z·SE]   where z=1.96 for 95%
+Standard Error: SE = σ/√n
+Bias: Bias = E[Estimate] - TrueValue  (0 = unbiased)
+MSE: MSE = Bias² + Variance
+Variance Reduction Ratio: VR = Var(Naive) / Var(Improved)</pre>
+
+        <h3>Commands</h3>
+        <pre># Local development
+mvn spring-boot:run                  # Start backend
+npm run dev                          # Start frontend
+
+# Testing
+curl -X POST http://localhost:8080/api/v1/simulate \
+  -H "Content-Type: application/json" \
+  -d '{"domain":"buffon","samples":5000,"replications":100,"threads":4,"seed":42}'
+
+# Deployment
+git push origin main                 # Auto-deploys to Render + Vercel</pre>
+
+        <h3>Important Links</h3>
+        <ul>
+            <li><strong>Live Demo:</strong> <a href="https://monte-carlo-simulation-engine-gwb9x3jyj.vercel.app">monte-carlo-simulation-engine-gwb9x3jyj.vercel.app</a></li>
+            <li><strong>GitHub:</strong> <a href="https://github.com/riyarana25/monte-carlo-simulation-engine">github.com/riyarana25/monte-carlo-simulation-engine</a></li>
+            <li><strong>Spring Boot Docs:</strong> spring.io/projects/spring-boot</li>
+            <li><strong>Next.js Docs:</strong> nextjs.org/docs</li>
+            <li><strong>Render Dashboard:</strong> dashboard.render.com</li>
+            <li><strong>Vercel Dashboard:</strong> vercel.com/dashboard</li>
+        </ul>
+
+        <!-- Final Tips -->
+        <div class="section-break"></div>
+        <h2>Interview Day Tips</h2>
+
+        <ul>
+            <li><strong>Prepare Your Story:</strong> Have a 2-minute summary ready. Practice it until smooth.</li>
+            <li><strong>Know Your Numbers:</strong> 5× speedup, 3.45× variance reduction, 100 replications, 10K samples. Be ready to explain why these matter.</li>
+            <li><strong>Deep Dive Ready:</strong> For each component (backend, frontend, deployment), have 3-5 talking points ready.</li>
+            <li><strong>Bug Stories:</strong> Have 2-3 bug stories ready showing debugging methodology.</li>
+            <li><strong>Scaling Vision:</strong> Be able to sketch architecture for 1M users on a whiteboard.</li>
+            <li><strong>Questions Ready:</strong> Prepare intelligent questions: "What's your architecture for scaling?" "How do you handle performance monitoring?"</li>
+            <li><strong>Code Access:</strong> Have GitHub link ready, be prepared to walk through code.</li>
+            <li><strong>Live Demo:</strong> Be ready to open the live app and show how it works.</li>
+        </ul>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p><strong>Monte Carlo Simulation Engine</strong> - Complete Interview Preparation Guide</p>
+            <p>Generated: 2026-07-22 | Author: Riya Rana</p>
+            <p>Questions? Check the GitHub repository or live demo</p>
+            <p style="margin-top: 20px; font-size: 0.9em;">💡 Tip: Print this page as PDF using Ctrl+P (or Cmd+P on Mac) → Save as PDF</p>
+        </div>
+    </div>
+</body>
+</html>
