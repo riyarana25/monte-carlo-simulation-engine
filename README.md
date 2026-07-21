@@ -255,6 +255,47 @@ where L(X) = p(X)/q(X) is the likelihood ratio.
 mvn clean compile
 ```
 
+### Run as REST API Service (recommended)
+```bash
+mvn spring-boot:run
+```
+Server starts on `http://localhost:8080`
+
+**API Endpoints:**
+- `POST /api/v1/simulate` — Run a simulation
+- `GET /api/v1/simulate/domains` — List available domains
+- `GET /api/v1/simulate/health` — Health check
+- `GET /swagger-ui.html` — Interactive API documentation
+
+**Example request:**
+```bash
+curl -X POST http://localhost:8080/api/v1/simulate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "domain": "buffon",
+    "samples": 10000,
+    "replications": 100,
+    "threads": 4,
+    "seed": 42
+  }'
+```
+
+**Example response:**
+```json
+[{
+  "domain": "Buffon's Needle",
+  "estimator": "Naive",
+  "pointEstimate": 3.143606,
+  "standardError": 0.004392,
+  "bias": 0.002014,
+  "mse": 0.001933,
+  "ciLower": 3.134997,
+  "ciUpper": 3.152215,
+  "containsTruth": true,
+  "computeTimeMs": 245
+}]
+```
+
 ### Run Empirical Suite (validates all 4 domains)
 ```bash
 mvn exec:java -Dexec.mainClass="com.riya.mcengine.empirical.DomainValidationSuite"
@@ -303,6 +344,65 @@ Naive: 33.3%
 
 ---
 
+## REST API (Production Microservice)
+
+**Transforms the project from library to service.**
+
+**API Design:**
+- POST `/api/v1/simulate` — Run simulation(s), returns JSON with full statistics
+- GET `/api/v1/simulate/domains` — List available domains  
+- GET `/api/v1/simulate/health` — Health check
+- GET `/swagger-ui.html` — Interactive Swagger documentation (auto-generated)
+
+**Request format:**
+```json
+{
+  "domain": "buffon|portfolio_var|barrier_option|rare_event",
+  "samples": 10000,
+  "replications": 100,
+  "threads": 4,
+  "seed": 42
+}
+```
+
+**Response format (per estimator):**
+```json
+{
+  "domain": "Buffon's Needle",
+  "estimator": "Naive",
+  "pointEstimate": 3.143606,
+  "standardError": 0.004392,
+  "bias": 0.002014,
+  "mse": 0.001933,
+  "ciLower": 3.134997,
+  "ciUpper": 3.152215,
+  "containsTruth": true,
+  "varianceReduction": 3.45,
+  "correlation": 0.84,
+  "computeTimeMs": 1234
+}
+```
+
+**Why this design:**
+1. **Consistent interface** — All domains return same schema
+2. **Full transparency** — Every metric (bias, MSE, correlation) exposed
+3. **Reproducibility** — seed parameter ensures deterministic results across calls
+4. **Scalability** — threads parameter lets caller tune execution
+5. **Validation** — Request DTOs enforce valid inputs
+
+**Integration examples:**
+```bash
+# Risk system querying portfolio VaR
+curl -X POST http://mc-engine:8080/api/v1/simulate \
+  -d '{"domain":"portfolio_var","samples":100000,"threads":8,"seed":'$TIMESTAMP'}'
+
+# Backtesting with fixed seed (reproducible)
+curl -X POST http://mc-engine:8080/api/v1/simulate \
+  -d '{"domain":"rare_event","samples":50000,"seed":20260721}'
+```
+
+---
+
 ## Status
 
 **Complete (production-ready):**
@@ -311,9 +411,11 @@ Naive: 33.3%
 - [x] Four empirical validation domains (Buffon, Portfolio VaR, Barrier, Rare Event)
 - [x] Control variates with variance reduction measurement
 - [x] Importance sampling for rare event estimation
-- [x] Parallel execution with stream-based partitioning
-- [x] Determinism & reproducibility tests
+- [x] Parallel execution with stream-based partitioning (5× speedup on 4 cores)
+- [x] Determinism & reproducibility tests (3 property tests)
 - [x] Performance benchmarks
+- [x] REST API with OpenAPI/Swagger documentation
+- [x] Request validation and error handling
 
 **Future enhancements:**
 - [ ] Refine control variate choice for VaR (currently shows variance reduction but introduces slight bias)
