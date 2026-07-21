@@ -1,5 +1,23 @@
 spring:
   application:
     name: mcengine
+  webflux:
+    base-path: /
+
 server:
   port: 8080
+  servlet:
+    context-path: /
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+
+logging:
+  level:
+    root: INFO
+    com.riya.mcengine: DEBUG
